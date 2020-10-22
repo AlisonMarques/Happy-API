@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
 
 import orphanageView from '../views/orphanage_view';
-import schemaOrphanage from '../schemas/schemaOrphanage';
-import Orphanage from '../models/Orphanage';
 import { OrphanagesService } from '../services'
 
 class OrphanagesController {
@@ -25,16 +22,21 @@ class OrphanagesController {
   }
 
   async show(req: Request, res: Response) {
-    const { id } = req.params;
-
-    const orphanagesRepository = getRepository(Orphanage);
-
-    //findOneOrFail = encontre um ou retorne falha
-    const orphanage = await orphanagesRepository.findOneOrFail(id, {
-      relations: ['images'],
-    });
-
-    return res.json(orphanageView.render(orphanage));
+    try {
+      const { id } = req.params;
+      const { result, status } = await OrphanagesService.show(id)
+      return res
+        .status(status)
+        .json(orphanageView.render(result));
+    } catch (error) {
+      return res
+        .status(error.status)
+        .send({
+          errorDetail: error,
+          errorResume: 'Erro na chamada do show',
+          message: 'CODE 57-A - Erro interno no servidor'
+        });
+    }
   }
 
   async create(request: Request, response: Response) {
@@ -48,12 +50,8 @@ class OrphanagesController {
       open_on_weekends,
     } = request.body;
 
-    const orphanagesRepository = getRepository(Orphanage);
-
     const requestImages = request.files as Express.Multer.File[];
-    const images = requestImages.map((image) => {
-      return { path: image.filename };
-    });
+    const images = requestImages.map(image => ({ path: image.filename }));
 
     const data = {
       name,
@@ -66,17 +64,8 @@ class OrphanagesController {
       images,
     };
 
-    await schemaOrphanage.validate(data, {
-      abortEarly: false,
-    });
-
-    // criando orphanage
-    const orphanage = orphanagesRepository.create(data);
-
-    //salvando no banco de dados
-    await orphanagesRepository.save(orphanage);
-
-    return response.status(201).json(orphanage);
+    const { result, status } = await OrphanagesService.create(data)
+    return response.status(status).json(result);
   }
 }
 
