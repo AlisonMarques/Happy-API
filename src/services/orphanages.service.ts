@@ -1,4 +1,3 @@
-import * as Yup from 'yup';
 import httpStatus from 'http-status';
 import { getRepository } from 'typeorm';
 
