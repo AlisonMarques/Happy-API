@@ -19,6 +19,10 @@ export class createOrphanages1602732236200 implements MigrationInterface {
             type: 'varchar',
           },
           {
+            name: 'user_id',
+            type: 'integer',
+          },
+          {
             name: 'latitude',
             type: 'decimal',
             scale: 10,
@@ -35,6 +39,10 @@ export class createOrphanages1602732236200 implements MigrationInterface {
             type: 'text',
           },
           {
+            name: 'whatsapp',
+            type: 'integer',
+          },
+          {
             name: 'instructions',
             type: 'text',
           },
@@ -46,6 +54,16 @@ export class createOrphanages1602732236200 implements MigrationInterface {
             name: 'open_on_weekends',
             type: 'boolean',
             default: false,
+          },
+        ],
+        foreignKeys: [
+          {
+            name: 'UserOrphanage',
+            columnNames: ['user_id'],
+            referencedTableName: 'users',
+            referencedColumnNames: ['id'],
+            onUpdate: 'CASCADE',
+            onDelete: 'CASCADE',
           },
         ],
       })

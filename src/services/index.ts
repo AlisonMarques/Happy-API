@@ -1,5 +1,4 @@
-import OrphanagesService from './orphanages.service'
+import OrphanagesService from './orphanages.service';
+import UserService from './users.service';
 
-export {
-  OrphanagesService
-}
+export { OrphanagesService, UserService };
