@@ -4,9 +4,12 @@ import {
   PrimaryGeneratedColumn,
   JoinColumn,
   OneToMany,
+  BeforeInsert,
 } from 'typeorm';
 
 import Orphanage from './Orphanage';
+
+import * as bcrypt from 'bcrypt';
 
 @Entity('users')
 export default class User {
@@ -21,6 +24,15 @@ export default class User {
 
   @Column()
   password: string;
+
+  @BeforeInsert()
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  async comparePassword(attempt: string): Promise<boolean> {
+    return await bcrypt.compare(attempt, this.password);
+  }
 
   @OneToMany(() => Orphanage, (orphanage) => orphanage.user, {
     cascade: ['insert', 'update'],
