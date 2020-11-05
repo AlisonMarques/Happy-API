@@ -30,8 +30,8 @@ export default class User {
     this.password = await bcrypt.hash(this.password, 10);
   }
 
-  async comparePassword(attempt: string): Promise<boolean> {
-    return await bcrypt.compare(attempt, this.password);
+  async comparePassword(password: string): Promise<boolean> {
+    return await bcrypt.compare(password, this.password);
   }
 
   @OneToMany(() => Orphanage, (orphanage) => orphanage.user, {
