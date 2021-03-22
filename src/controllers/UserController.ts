@@ -7,17 +7,17 @@ import schemaUser from '../schemas/schemaUser';
 import User from '../models/User';
 
 class UserController {
-  async create(request: Request, response: Response) {
-    const { id, name, email, password } = request.body;
+  async create(req: Request, response: Response) {
+    const { id, name, email, password } = req.body;
 
-    if (!(await schemaUser.isValid(request.body))) {
+    if (!(await schemaUser.isValid(req.body))) {
       return response.status(400).json({ error: 'Validation Fails' });
     }
 
     const userRepository = getRepository(User);
 
     const userExists = await userRepository.findOne({
-      where: { email: request.body.email },
+      where: { email: req.body.email },
     });
 
     if (userExists) {
@@ -34,6 +34,10 @@ class UserController {
     const { result, status } = await UserService.create(data);
 
     return response.status(status).json(result);
+  }
+
+  async update(req: Request, res: Response) {
+    return res.json({ ok: true });
   }
 }
 
